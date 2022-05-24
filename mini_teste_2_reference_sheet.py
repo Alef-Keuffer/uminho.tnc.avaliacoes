@@ -19,6 +19,14 @@ def Elgamal_decif(pub_key, a, cripto):
 
 # reconhecer raizes primitivas
 
+def multiplicative_group(n):
+    return {IntegerModRing(n)(e)
+            for e in IntegerModRing(n).list_of_elements_of_multiplicative_group()}
+
+def findOrders(n):
+    return {(e,e.multiplicative_order())
+            for e in multiplicative_group(n)}
+
 def all_prim_roots(n):
     return {e[0] for e in findOrders(n) if e[1] == euler_phi(n)}
 

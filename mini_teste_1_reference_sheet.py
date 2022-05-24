@@ -111,6 +111,8 @@ def rsa_encrypt(m, n, e):
 def rsa_decrypt(c, d, n):
     return lift(Mod(c,n)^d)
 
+# encontrar/verificar uma raíz primitiva de um natural
+
 def multiplicative_group(n):
     return {IntegerModRing(n)(e)
             for e in IntegerModRing(n).list_of_elements_of_multiplicative_group()}
@@ -118,8 +120,6 @@ def multiplicative_group(n):
 def findOrders(n):
     return {(e,e.multiplicative_order())
             for e in multiplicative_group(n)}
-
-# encontrar/verificar uma raíz primitiva de um natural
 
 def all_prim_roots(n):
     return {e[0] for e in findOrders(n) if e[1] == euler_phi(n)}

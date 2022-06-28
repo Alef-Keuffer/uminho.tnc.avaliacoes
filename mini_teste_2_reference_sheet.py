@@ -101,9 +101,10 @@ a^((n-1)/2) ≡ ± 1 (mod n)
 
 def is_euler_pseudoprime(n, base=2):
     assert n % 2 == 1
-    return gcd(a, n) == 1 and (power_mod(a, (n - 1) // 2, n) == IntegerModRing(1) or power_mod(a, (n - 1) // 2,
-                                                                                               n) == -1) and not is_prime(
-        n)
+    return gcd(a, n) == 1 and\
+           not is_prime(n) and\
+           (power_mod(a, (n - 1) // 2, n) == IntegerModRing(1) or
+            power_mod(a, (n - 1) // 2,n) == -1)
 
 
 # Perguntas do Mini-teste 2

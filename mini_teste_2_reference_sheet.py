@@ -3,25 +3,19 @@
 
 # cifrar/decifrar usando o ElGamal
 def elgamal_encrypt(public_key, message, k_random=None):
-    # b_power is the result of an exponentiation operation (r^α where α is a secret)
+    # b_power is the result of an exponentiation operation (r^α where 1<α<p-1 is a secret)
     p_prime, r_primitive_root, b_power = public_key
-    Zp = IntegerModRing(p_prime)
-    r_primitive_root, b_power = Zp(r_primitive_root), Zp(b_power)
     if k_random is None:
-        k_random = randint(2, p_prime - 2)
-    gama, delta = r_primitive_root ^ k_random, message * b_power ^ k_random
-    return gama, delta
+        k_random = randint(2, p_prime - 1)
+    gamma = power_mod(r_primitive_root,k_random,p_prime)
+    delta = power_mod(message * b_power,k_random,p_prime)
+    return Mod(gamma,p_prime), Mod(delta,p_prime)
 
-
-def elgamal_decrypt(public_key, a_exponent, cryptogram):
-    # b_power is the result of an exponentiation operation (r^α where α is a secret)
+def elgamal_decrypt(public_key, α_exponent, cryptogram):
+    # b_power is the result of an exponentiation operation (r^α where 1<α<p-1 is a secret)
     p_prime, r_primitive_root, b_power = public_key
-    Zp = IntegerModRing(p_prime)
-    gama, delta = cryptogram
-    gama, delta = Zp(gama), Zp(delta)
-    decrypted_message = (gama ^ a_exponent) ^ (-1) * delta
-    return decrypted_message
-
+    gamma, delta = cryptogram
+    return Mod(delta * power_mod(gamma,-α_exponent,p_prime),p_prime)
 
 # reconhecer raizes primitivas
 

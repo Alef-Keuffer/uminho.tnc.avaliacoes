@@ -116,7 +116,7 @@ a = 26889797028840904448
 # a decifração de
 cryptogram = (31508193067819085597, 42769957659645449029)
 # é igual a ___.
-elgamal_decrypt(pub_key, a, cryptogram)
+elgamal_decrypt(pub_key, a, cryptogram) #1342
 
 # Pergunta 2
 # Considere o primo

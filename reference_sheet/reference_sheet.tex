@@ -1,0 +1,302 @@
+% arara: lualatex: {shell: true}
+% arara: latexmk: {clean: partial}
+\documentclass{article}
+%\usepackage[paperheight=\maxdimen,paperwidth=30cm,left=2cm,right=2cm,top=2cm,bottom=3cm]{geometry}%PACKAGE geometry
+%\usepackage{varwidth}
+%\usepackage[pdftex,active,tightpage]{preview}
+%\renewcommand{\PreviewBorder}{1cm}
+
+%\newcommand{\formatpage}{\leavevmode\setlength{\parskip}{\baselineskip}\setlength{\parindent}{0pt}}
+
+%\newcommand{\StartPage}[1][\paperwidth]{\begin{preview}\begin{varwidth}{#1}\formatpage}%MACRO StartPage
+%\newcommand{\EndPage}{\end{varwidth}\end{preview}}%MACRO EndPage
+
+%\newcommand{\Newpage}[1][\paperwidth]{\EndPage\StartPage[#1]}%MACRO Newpage
+%\newcommand{\page}[2][\paperwidth]{\StartPage[#1]#2\EndPage}
+
+%\NewDocumentCommand{\doc}{O{\paperwidth}+m}{\StartPage[#1]#2\EndPage}
+
+\usepackage{general}
+\usepackage{caption}
+\setcounter{secnumdepth}{5}
+
+\titleformat{\subsubsection}[runin]
+{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\title{Summary for Computational Number Theory at University of Minho}
+\author{\alef}
+
+\begin{document}
+\StartPage[12cm]
+	\maketitle
+
+	Please contact me if you notice any mistaskes. This summary is not complete.
+
+	\section{Topics worth learning}
+
+	Theses topics had questions worth 3 points in past tests.
+
+	\begin{enumerate}
+		\item Use Fermat factorization
+		\item Use $ρ$-Pollard
+		\item Use $p-1$ Pollard
+
+		\item Solve congruence equation knowing facts related to primitive root and index.
+
+		\item Cipher a message using ElGamal + show that a number is a primitive root
+		\item Calculate $φ(n)$ + decipher RSA
+
+		\item Show there are not solutions for a congruence relation (quadratic residue)
+
+		\item Euler pseudoprime
+		\item Solovay-Strassen primality test
+		\item Miller-Rabin primality test
+
+		\item Suppose that if $n$ is a product of two primes. Show that factoring $n$ is equivalent to calculating $φ(n)$.
+
+		\item Calculate Jacobi Symbol
+
+	\end{enumerate}
+
+	\section{Encryption Systems}
+
+	\newcommand{\PuK}{\textrm{PubK}}
+	\newcommand{\PrK}{\textrm{PrivK}}
+	Let $M$ denote the message, $C$ the ciphertext.
+
+		\subsection{ElGamal}
+
+$\begin{array}{ll}
+	\PrK &≡ 1<α<p-1\\
+	\PuK &≡ (p∈ℙ,g:⟨g⟩ = ℤ_p^*,b≝g^α)\\
+	C    &≡ (γ≝g^k,δ≝Mb^k),\quad k\textrm{ random element in } \{2,\dots,p-2\}\\
+	M    &≡ δγ^{α^{-1}} \pmod p\\
+\end{array}$
+
+
+%	\begin{algorithm}[H]
+%	\caption{ElGamal encipher}\label{alg:elgmal-enc}
+%	\begin{algorithmic}
+%		\REQUIRE $⟨g⟩ = ℤ_p^*$ \AND\\
+%				 message $m$ \AND\\
+%				 $b$ is the result of an exponentiation operation ($g^α$ where $1<α<p-1$ is a secret)
+%		\ENSURE returns a ciphertext $(γ,δ)$ of the message.
+%		\STATE $k \gets \textrm { random value in } \{2,\dots,p-2\}$
+%		\STATE $γ \gets g^k \pmod p$
+%		\STATE $δ \gets mb^k \pmod p$
+%		\RETURN $γ,δ$
+%	\end{algorithmic}
+%\end{algorithm}
+%
+%	\begin{algorithm}[H]
+%	\caption{ElGamal decipher}\label{alg:elgmal-dec}
+%	\begin{algorithmic}
+%		\REQUIRE cryptogram $(γ,δ)$ \AND
+%				 $b$ is the result of an exponentiation operation ($r^α$ where $1<α<p-1$ is a secret)
+%		\ENSURE returns the cyphertext deciphered, i.e., the message
+%		\RETURN $δγ^{α^{-1}} \pmod p$
+%	\end{algorithmic}
+%\end{algorithm}
+
+\subsection{RSA}
+
+$\begin{array}{ll}
+	\PrK &≡ d≝e^{-1} \pmod {φ(n) = (p-1)(q-1)}\\
+	\PuK &≡ (n≝pq,e)\\
+	C  	 &≡ M^e \pmod n\\
+	M    &≡ C^d \pmod n
+\end{array}$
+
+	\section{Prime factorization}
+
+	\subsection{Factoring given $φ(n)$}
+	$\frac{-b+\sqrt{b^2 - 4n}}{2}$ where $b = n+1-φ(n)$ is a factor of $n$.
+
+	\subsection{Fermat}
+
+	\begin{algorithm}[H]
+		\caption{Fermat factorization}\label{alg:fermat}
+		\begin{algorithmic}
+			\REQUIRE $n \textrm{ odd } ∈ ℕ$
+			\ENSURE $(a+\sqrt{a^2-n})(a-\sqrt{a^2-n}) = n$
+			\STATE $a \gets \sqrt{⌈n⌉}$
+			\WHILE{$\sqrt{a^2-n} ∉ ℤ$}
+			\STATE $a \gets a+1$
+			\ENDWHILE
+		\end{algorithmic}
+	\end{algorithm}
+
+	\subsection{$ρ$-Pollard}
+	\begin{algorithm}[H]
+		\caption{$ρ$-Pollard factorization}\label{alg:rho-pollard}
+		\begin{algorithmic}
+			\REQUIRE{b-smooth $g$, e.g. $g(x) = x^2+1$ \AND $x_0$, e.g., $x_0 ≝ 2$}
+			\ENSURE{$\gcd(|x-y|,n)$ is nontrivial factor of $n$}
+			\STATE $x \gets x_0$
+			\STATE $y \gets x_0$
+			\WHILE{$\gcd(|x-y|,n) = 1$}
+			\STATE $x \gets g(x)$
+			\STATE $y \gets g(g(y))$
+			\ENDWHILE
+		\end{algorithmic}
+	\end{algorithm}
+
+	\subsection{Pollard $p-1$}
+
+%	\begin{algorithm}[H]
+%		\caption{Pollard $p-1$}\label{alg:pollar-p-1}
+%		\begin{algorithmic}
+%			\REQUIRE $n \textrm{ odd composite } ∈ ℕ$
+%			\STATE $M \gets \displaystyle\prod_{q ∈ ℙ≤B}{q^{⌊\log_qB⌋}}$
+%			\LOOP
+%			\STATE $x \gets 2^M-1 \pmod n$
+%			\IF{$x = 0$}
+%			\STATE continue
+%			\ENDIF
+%			\STATE $g \gets \gcd(x,n)$
+%			\IF{$g ≠ 1$ \OR $g ≠ n$}
+%			\RETURN g
+%			\ENDIF
+%			\ENDLOOP
+%		\end{algorithmic}
+%	\end{algorithm}
+
+	The algorithm as presented by the professor
+
+	\begin{algorithm}[H]
+		\caption{Pollard $p-1$ simplified}\label{alg:pollar-p-1-simp}
+		\begin{algorithmic}
+			\REQUIRE $n \textrm{ odd composite } ∈ ℕ$
+			\ENSURE $\gcd(r-1,n)$ is a nontrivial factor of $n$
+			\STATE $r_0 \gets 2$
+			\STATE $r \gets r_0$
+			\WHILE{$\gcd(r-1,n) = 1$}
+			\STATE $r \gets r*r_0 \pmod n$
+			\ENDWHILE
+		\end{algorithmic}
+	\end{algorithm}
+
+\section{Useful facts}
+
+\subsection{Solving simple congruence equations knowing primitive roots}
+
+Let $z_i ∈ ℤ$ and $I(a)$ be the the index with respect to a primitive root $g ∈ ℤ_n^*$.
+To solve an equation of the type $$z_1x^{z_2} ≡ z_3 \pmod n$$
+get $$I(z_1x^{z_2}) ≡ I(z_3) ⟺ z_2I(x) ≡ I(z_3) - I(z_1) \pmod {φ(n)}$$ to the form
+$$I(x) ≡ I(z_4) \pmod {φ(n)}$$ then conclude $$x ≡ z_4 \pmod n$$
+
+\subsection{Euler's theorem}
+$$a ⟂ n ⟹ a^{φ(n)} ≡ 1 \bmod n$$
+
+\subsection{Euler's totient function}
+
+\subsubsection{Definition}
+$$φ(n) ≝ n \displaystyle∏_{p|n} (1-\frac{1}{p})$$
+
+\subsubsection{Useful facts}
+
+\paragraph{multiplicative} $m ⟂ n ⟹ φ(mn) = φ(m)φ(n)$
+\paragraph{prime power argument} $φ(p^k) = p^k - p^{k-1}$
+
+\subsection{Reduced residue system}
+$$\operatorname{RRS}(n) = R\textrm{ s.t. }
+\begin{cases}
+	∀r ∈ R.\quad \gcd(r,n)  = 1\\
+	|R| = φ(n)\\
+	∀r_1,r_2 ∈ R.\quad r_1 \not≡_n r_2
+\end{cases}$$
+
+\subsection{Primitive root modulo $n$}
+
+\subsubsection{Definition}
+$$g\textrm{ is primitive root modulo } n\textrm{ if and only if } ⟨g⟩ = ℤ^*_n$$
+
+Alternatively, one can say $g$ is a primitive root of $n$ iff its order is $φ(n)$.
+
+\subsubsection{Useful facts}
+\paragraph{Fact} $⟨g⟩ = ℤ^*_p ⟹ g^{\frac{p-1}{2}} ≡ -1 \pmod p$
+
+\paragraph{Condition for existence of primitive root}
+
+$ℤ_n^*$ is cyclic iff $n$ is equal to $2,4,p^k,2p^k$ where $p^k$ is the power of and odd prime number. When (and only when) this group $ℤ_n^*$ is cyclic, a generator of this cyclic group is called a primitive root modulo $n$.
+
+When $ℤ_n^*$ is non-cyclic, such primitive root elements mod $n$ do not exist.
+
+\paragraph{Number of primitive roots}
+
+The number of primitive roots modulo n, if there are any, is equal to $$φ(φ(n))$$
+
+\subsubsection{Showing $g$ is primitive root of $n$}
+
+$$∀i ∈ \{1,...,k\}.\quad g^{\frac{φ(n)}{p_i}} \not\equiv 1\bmod n ⟹ ⟨g⟩ = Z_n^*$$
+
+Where $p_1,\dots,p_k$ are the different prime factors of $φ(n)$.
+
+\subsection{Jacobi symbol}
+
+\subsubsection{Definition}
+The Jacobi symbol $(\frac{a}{n})$ is defined as the product of the Legendre symbol corresponding to the prime factors of $n$: $$(\frac{a}{n}) = (\frac{a}{p_1})^{α_1}(\frac{a}{p_2})^{α_2}\cdots(\frac{a}{p_k})^{α_k}$$
+
+\subsubsection{Legendre symbol}
+Definition of the Legendre symbol: $$(\frac{a}{p}) = \begin{cases}
+	0  & \textrm{ if } a \equiv 0 \pmod p\\
+	1  & \textrm{ if } a \not\equiv 0 \pmod p\textrm{ and for some integer } x: a\equiv x^2 \pmod p\\
+	-1 & \textrm{ if } a \not\equiv 0 \pmod p\textrm{ and there is no such } x\\
+	\end{cases}$$
+
+\subsubsection{Useful properties}
+
+\paragraph{Modular equivalence}
+$$(\frac{a}{n}) = (\frac{b}{n}) \impliedby a ≡ b\pmod n$$
+\paragraph{Coprimality}
+$$(\frac{a}{n}) = 0 \impliedby \gcd(a,n) \not= 1$$
+\paragraph{Multiplicative}
+Completely multiplicative function (if fixing one of the arguments):\\
+$$(\frac{ab}{mn}) = (\frac{a}{mn})(\frac{b}{mn}) = (\frac{ab}{m})(\frac{ab}{n})$$
+\paragraph{Quadratic reciprocity}
+Law of quadratic reciprocity: if $p$ and $q$ are odd positive coprime integers, then
+$$(\frac{p}{q})(\frac{q}{p}) = (-1)^{\frac{p-1}{2}⋅\frac{q-1}{2}}$$
+\paragraph{Euler's criteria}
+${(\frac{a}{p} )}  ≡ a^{\frac{p-1}{2}} \pmod p$
+\paragraph{Extra}
+\begin{align*}
+{(\frac{-1}{n})}  &= (-1)^{\frac{n-1}{2}}\\[.2cm]
+{(\frac{2}{n} )}  &= (-1)^{\frac{n^2-1}{8}}\\[.2cm]
+{(\frac{1}{n} )}  &= (\frac{n}{1}) = 1
+\end{align*}
+
+\section{Primality testing}
+
+\subsection{Pseudoprimes}
+
+\subsubsection{Weak pseudoprime}
+A composite number $n$ such that $b^n ≡ b \pmod n$ is a weak pseudoprime to base $b$.
+
+\subsubsection{Strong pseudoprime}
+A composite number $n$ such that it passes the Miller-Rabin test for base $b$.
+
+\subsubsection{Euler pseudoprime}
+An odd composite integer $n$ is called an Euler pseudoprime to base $b$, if
+$$b^{\frac{n-1}{2}} ≡ (\frac{a}{n}) \pmod n$$
+
+\subsubsection{Fermat pseudoprime}
+A composite integer $n$ is called a Fermat pseudoprime to base $b>1$ if
+$$b^{n-1} ≡ 1 \pmod n$$
+
+\subsubsection{Carmichael number}
+$n$ is a Carmichael number if it's a Fermat pseudoprime for all values $b$ coprime to $n$.
+
+\subsection{Solovay-Strassen}
+$(\frac{b}{n}) = 0 ∨ (\frac{b}{n}) \not\equiv b^{\frac{n-1}{2}} \bmod n ⟹ n\textrm{ is not prime}$
+
+\subsection{Miller-Rabin}
+Let $n - 1 = 2^ed$ with $n,d$ odd.
+
+Let $\gcd(1<b<n,n) = 1$.
+
+If $b^d ≡ 1 \bmod n$ or $\displaystyle∃_{0≤j<e}.\ b^{2^{j}d} ≡ -1 \bmod n$, then $n$ passes the test for base $b$.
+
+If $n$ is composite, the probability that $n$ passes the test for $k$ bases is
+$< \frac{1}{4k}$.
+\EndPage
+\end{document}
